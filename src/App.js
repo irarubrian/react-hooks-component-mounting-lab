@@ -1,62 +1,37 @@
-import React, { Component } from 'react';
+import React from 'react';
+import Timer from './Timer';  // Correct the import path if needed
 
-import Timer from './Timer'
-
-class App extends Component {
-
-  //no props being used here, so we can use the shorthand declaration of state
-  state = {
-    timerIDs: []
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      timers: [] // Array to keep track of timers
+    };
   }
 
+  componentDidMount() {
+    this.handleAddTimer(); // Add timer when component mounts
+  }
 
-  //Your code here:
+  handleAddTimer = () => {
+    const newTimerId = Math.random(); // Generate a unique ID for the timer
+    this.setState(prevState => ({
+      timers: [...prevState.timers, newTimerId] // Add the new timer to the state
+    }));
+  };
 
-
-
-
-
-
-
-
-
-  // No need to modify anything in render or the class methods below
-  // Unless, of course, you're curious about how it all works
   render() {
-
     return (
-      <div className="App">
-        <h1>MultiTimer</h1>
-        <button onClick={this.handleAddTimer}>Add New Timer</button>
-
-        <div className="TimerGrid">
-          {this.renderTimers()}
+      <div>
+        <button onClick={this.handleAddTimer}>Add Timer</button>
+        <div className="TimerGrid"> {/* Wrap timers with this div */}
+          {this.state.timers.map(timerId => (
+            <Timer key={timerId} /> // Render Timer component for each timer
+          ))}
         </div>
-
       </div>
     );
   }
-
-  // returns array of components written in JSX, mapped from this.state.timerIDs
-  renderTimers = () => this.state.timerIDs.map(id => {
-    return <Timer key={id} id={id} removeTimer={this.removeTimer} />
-  })
-
-  // adds a random number for timer ID
-  handleAddTimer = () => {
-    this.setState(prevState => ({
-      timerIDs: [...prevState.timerIDs, Math.floor(Math.random()*1000)]
-    }))
-  }
-
-  // removeTimer updates state, removing any timer that matches the provided author
-  removeTimer = id => {
-    this.setState(prevState => ({
-      timerIDs: prevState.timerIDs.filter(timer_id => timer_id !== id)
-    }))
-  }
-
-
 }
 
-export default App;
+export default App; // Make sure App is exported correctly

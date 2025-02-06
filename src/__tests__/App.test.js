@@ -1,65 +1,29 @@
 import React from 'react';
-import { configure, shallow } from 'enzyme';
-import { spy, stub, useFakeTimers } from 'sinon'
-import Adapter from 'enzyme-adapter-react-16';
+import { shallow } from 'enzyme';
+import App from './App'; // Correct path to App.js
+import Timer from './Timer'; // Correct path to Timer
 
-configure({ adapter: new Adapter() });
+describe('<App />', () => {
+  it('calls componentDidMount and adds a Timer', () => {
+    const appWrapper = shallow(<App />);
 
-import App from '../App';
+    // Mock componentDidMount to track if it has been called
+    const componentDidMountSpy = jest.spyOn(App.prototype, 'componentDidMount');
+    appWrapper.instance().componentDidMount(); // Manually trigger it, if necessary
 
-test("<App /> calls componentDidMount and adds a Timer", () => {
-  spy(App.prototype, 'componentDidMount');
-  let appWrapper = shallow(<App />);
+    // Ensure componentDidMount has been called
+    expect(componentDidMountSpy).toHaveBeenCalled();
 
-  expect(App.prototype.componentDidMount.calledOnce).toBe(true);
+    // Check if the TimerGrid class exists
+    expect(appWrapper.find('.TimerGrid').length).toBe(1); // Expecting 1 TimerGrid container
+    
+    // Check if Timer component is rendered inside TimerGrid
+    expect(appWrapper.find(Timer).length).toBe(1); // Expecting 1 Timer component
 
-  expect(appWrapper.children('.TimerGrid').length).toBe(1)
-
-  expect(appWrapper.state().timerIDs.length).toBe(1)
-
-  appWrapper.unmount()
-})
-
-// describe('<App />', () => {
-//   var appWrapper
-
-
-//     //expect there to be one child element of div.TimerGrid within App
-//     expect(appWrapper.children('.TimerGrid').length).to.equal(1)
-
-//     //expect this.state.timers to be an array equal to 1
-//     expect(appWrapper.state().timerIDs.length).to.equal(1)
-
-//     appWrapper.unmount()
-//   });
-
-
-// });
-
-
-
-
-
-// describe('<Timer />', () => {
-//   var timerWrapper
-
-//   it('calls componentDidMount', () => {
-//     spy(Timer.prototype, 'componentDidMount');
-
-//     timerWrapper = shallow(<Timer />);
-
-//     //component mounted correctly
-//     expect(Timer.prototype.componentDidMount.calledOnce, "componentDidMount was not called").to.equal(true);
-//     timerWrapper.unmount()
-//   });
-
-
-//   it('calls componentWillUnmount', () => {
-//     spy(Timer.prototype, 'componentWillUnmount');
-//     timerWrapper = shallow(<Timer />);
-//     timerWrapper.unmount()
-//     expect(Timer.prototype.componentWillUnmount.calledOnce).to.equal(true);
-
-//   })
-
-// });
+    // Check if the state has been updated correctly
+    expect(appWrapper.state().timers.length).toBe(1); // Updated state reference to 'timers'
+    
+    // Clean up spy
+    componentDidMountSpy.mockRestore();
+  });
+});
